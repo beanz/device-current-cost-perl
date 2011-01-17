@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+
+# ABSTRACT: simple example script to read from a Current Cost monitor
+# PODNAME: current-cost-reader
+
+=head1 SYNOPSIS
+
+  # read from the USB tty device of Current Cost monitor
+  current-cost-reader --classic /dev/ttyUSB0
+
+  # read from the USB tty device of an older Classic Current Cost monitor
+  current-cost-reader --classic /dev/ttyUSB0
+
+  # read from saved log file
+  current-cost-reader cc128.log
+
+  # read from saved log file of an older Classic Current Cost monitor
+  current-cost-reader --classic classic.log
+
+=head1 DESCRIPTION
+
+This script is an example of the usage of the L<Device::CurrentCost>
+API.  It simply writes a summary of the received data to stdout.
+
+=cut
+
+use warnings;
+use strict;
+use Device::CurrentCost::Constants;
+use Device::CurrentCost;
+
+my $device = shift or die "Usage: $0 [--classic] [device]\n";
+my %args = ();
+if ($device =~ /^--?c/) {
+  $device = shift or die "Usage: $0 [--classic] [device]\n";
+  $args{type} = CURRENTCOST_CLASSIC;
+}
+
+my $cc = Device::CurrentCost->new(device => $device, %args);
+
+$|=1; # don't buffer output
+
+while (1) {
+  my $msg = $cc->read() or next;
+  print $msg->summary,"\n";
+}
+
+=head1 SEE ALSO
+
+L<Device::CurrentCost>
+
+Current Cost website: http://www.currentcost.com/
