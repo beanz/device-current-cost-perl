@@ -78,15 +78,39 @@ sub new {
   $self;
 }
 
+=method C<device()>
+
+Returns the path to the device.
+
+=cut
+
 sub device { shift->{device} }
 
+=method C<type()>
+
+Returns the type of the device.
+
+=cut
+
 sub type { shift->{type} }
+
+=method C<baud()>
+
+Returns the baud rate.
+
+=cut
 
 sub baud {
   my $self = shift;
   defined $self->{baud} ? $self->{baud} :
     $self->type == CURRENT_COST_CLASSIC ? 9600 : 57600;
 }
+
+=method C<posix_baud()>
+
+Returns the baud rate in L<POSIX#Termios> format.
+
+=cut
 
 sub posix_baud {
   my $self = shift;
@@ -101,7 +125,19 @@ sub posix_baud {
   $b;
 }
 
+=method C<filehandle()>
+
+Returns the filehandle being used to read from the device.
+
+=cut
+
 sub filehandle { shift->{filehandle} }
+
+=method C<open()>
+
+This method opens the serial port and configures it.
+
+=cut
 
 sub open {
   my $self = shift;

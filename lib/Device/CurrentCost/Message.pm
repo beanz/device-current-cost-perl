@@ -58,6 +58,12 @@ sub new {
   $self;
 }
 
+=method C<device_type()>
+
+Returns the type of the device that created the message.
+
+=cut
+
 sub device_type {
   my $self = shift;
   return $self->{device_type} if (exists $self->{device_type});
@@ -65,11 +71,23 @@ sub device_type {
     $self->message =~ m!<src><name>! ? CURRENT_COST_CLASSIC : CURRENT_COST_ENVY;
 }
 
+=method C<device()>
+
+Returns the name of the device that created the message.
+
+=cut
+
 sub device {
   my $self = shift;
   return $self->{device}->[0] if (exists $self->{device});
   $self->_find_device->[0]
 }
+
+=method C<device_version()>
+
+Returns the version of the device that created the message.
+
+=cut
 
 sub device_version {
   my $self = shift;
@@ -85,6 +103,12 @@ sub _find_device {
       [ $name, 'v'.$self->_parse_field('sver')] :
         [ split /-/, $self->_parse_field('src'), 2 ];
 }
+
+=method C<message()>
+
+Returns the raw data of the message.
+
+=cut
 
 sub message { shift->{message} }
 
@@ -102,8 +126,29 @@ sub _parse_field {
   }
 }
 
+=method C<dsb()>
+
+Returns the days since boot field of the message.
+
+=cut
+
 sub dsb { shift->_parse_field('dsb') }
+
+
+=method C<days_since_boot()>
+
+Returns the days since boot field of the message.
+
+=cut
+
 sub days_since_boot { shift->dsb }
+
+=method C<time()>
+
+Returns the time field of the message in C<HH:MM:SS> format.
+
+=cut
+
 sub time {
   my $self = shift;
   my $time = $self->_parse_field('time');
@@ -114,6 +159,12 @@ sub time {
         $self->_parse_field('sec')
 }
 
+=method C<time_in_seconds()>
+
+Returns the time field of the message in seconds.
+
+=cut
+
 sub time_in_seconds {
   my $self = shift;
   return $self->{time_in_seconds} if (exists $self->{time_in_seconds});
@@ -121,23 +172,94 @@ sub time_in_seconds {
   $self->{time_in_seconds} = $h*3600 + $m*60 + $s;
 }
 
+=method C<boot_time()>
+
+Returns the time since boot reported by the message in seconds.
+
+=cut
+
 sub boot_time {
   my $self = shift;
   $self->days_since_boot * 86400 + $self->time_in_seconds
 }
 
+=method C<sensor()>
+
+Returns the sensor number field of the message.  A classic monitor
+supports only one sensor so 0 is returned.
+
+=cut
+
 sub sensor { shift->_parse_field('sensor', 0) }
+
+=method C<id()>
+
+Returns the id field of the message.
+
+=cut
+
 sub id { shift->_parse_field('id') }
+
+=method C<type()>
+
+Returns the sensor type field of the message.
+
+=cut
+
 sub type { shift->_parse_field('type') }
-sub tmpr { shift->_parse_field('tmpr') }
+
+=method C<tmpr()>
+
+Returns the tmpr/temperature field of the message.
+
+=cut
+
+sub temperature { shift->_parse_field('tmpr') }
+
+=method C<tmpr()>
+
+Returns the temperature field of the message.
+
+=cut
+
 sub temperature { shift->tmpr }
+
+=method C<has_history()>
+
+Returns true if the message contains history data.
+
+=cut
+
 sub has_history { shift->message =~ /<hist>/ }
+
+=method C<has_readings()>
+
+Returns true if the message contains current data.
+
+=cut
+
 sub has_readings { shift->message =~ /<ch1>/ }
+
+=method C<units()>
+
+Returns the units of the current data readings in the message.
+
+=cut
+
 sub units {
   my $self = shift;
   my $ch1 = $self->_parse_field('ch1') or return;
   $ch1->{units}
 }
+
+=method C<value( [$channel] )>
+
+Returns the value of the current data reading for the given channel
+(phase) in the message.  If no channel is given then the total of all
+the current data readings for all channels is returned.
+
+=cut
+
 sub value {
   my ($self, $channel) = @_;
   $self->units || return; # return if no units can be found - historic only
@@ -150,6 +272,14 @@ sub value {
   }
   $self->{total}
 }
+
+=method C<summary( [$prefix] )>
+
+Returns the string summary of the data in the message.  Each line of the
+string is prefixed by the given prefix or the empty string if the prefix
+is not supplied.
+
+=cut
 
 sub summary {
   my ($self, $prefix) = @_;
