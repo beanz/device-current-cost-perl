@@ -33,8 +33,8 @@ use Exporter;
 
 our @ISA = qw(Exporter);
 our %EXPORT_TAGS = ( 'all' => [ qw(
-                                   test_error
-	                           test_warn
+                                    test_error
+                                    test_warn
 ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw();
