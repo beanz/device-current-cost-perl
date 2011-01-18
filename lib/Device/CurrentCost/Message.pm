@@ -214,9 +214,9 @@ Returns the tmpr/temperature field of the message.
 
 =cut
 
-sub temperature { shift->_parse_field('tmpr') }
+sub tmpr { shift->_parse_field('tmpr') }
 
-=method C<tmpr()>
+=method C<temperature()>
 
 Returns the temperature field of the message.
 
@@ -311,6 +311,12 @@ sub summary {
   }
   $str
 }
+
+=method C<history()>
+
+Returns a data structure contain any history data from the message.
+
+=cut
 
 sub history {
   my $self = shift;
