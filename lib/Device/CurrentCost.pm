@@ -23,6 +23,11 @@ package Device::CurrentCost;
 
 =head1 DESCRIPTION
 
+Module for reading from Current Cost energy meters.
+
+B<IMPORTANT:> This is an early release and the API is still subject to
+change.
+
 =cut
 
 use constant {
