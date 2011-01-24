@@ -33,7 +33,7 @@ my $device = shift or die "Usage: $0 [--classic] [device]\n";
 my %args = ();
 if ($device =~ /^--?c/) {
   $device = shift or die "Usage: $0 [--classic] [device]\n";
-  $args{type} = CURRENTCOST_CLASSIC;
+  $args{type} = CURRENT_COST_CLASSIC;
 }
 
 my $cc = Device::CurrentCost->new(device => $device, %args);
