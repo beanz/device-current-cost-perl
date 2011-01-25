@@ -28,6 +28,10 @@ Module for reading from Current Cost energy meters.
 B<IMPORTANT:> This is an early release and the API is still subject to
 change.
 
+The API for history is definitely not complete.  This will change soon
+and an mechanism for aggregating the history (which is split across
+many messages) should be added.
+
 =cut
 
 use constant {
