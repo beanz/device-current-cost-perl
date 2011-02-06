@@ -5,6 +5,8 @@
 
 =head1 SYNOPSIS
 
+  current-cost-reader [options] device
+
   # read from the USB tty device of Current Cost monitor
   current-cost-reader --classic /dev/ttyUSB0
 
@@ -17,6 +19,24 @@
   # read from saved log file of an older Classic Current Cost monitor
   current-cost-reader --classic classic.log
 
+=head1 OPTIONS
+
+=over
+
+=item B<-help>
+
+Print a brief help message.
+
+=item B<-man>
+
+Print the manual page.
+
+=item B<-verbose>
+
+Make output more verbose.
+
+=back
+
 =head1 DESCRIPTION
 
 This script is an example of the usage of the L<Device::CurrentCost>
@@ -28,13 +48,22 @@ use warnings;
 use strict;
 use Device::CurrentCost::Constants;
 use Device::CurrentCost;
+use Getopt::Long;
+use Pod::Usage;
 
-my $device = shift or die "Usage: $0 [--classic] [device]\n";
-my %args = ();
-if ($device =~ /^--?c/) {
-  $device = shift or die "Usage: $0 [--classic] [device]\n";
-  $args{type} = CURRENT_COST_CLASSIC;
-}
+my $help;
+my $man;
+my $verbose = 0;
+my %args;
+GetOptions('help|?' => \$help,
+           'man' => \$man,
+           'verbose+' => \$verbose,
+           'classic' => sub { $args{type} = CURRENT_COST_CLASSIC },
+          ) or pod2usage(2);
+pod2usage(1) if ($help);
+pod2usage(-exitstatus => 0, -verbose => 2) if $man;
+my $device = shift || pod2usage({ -message => 'A device parameter is required',
+                                  -exitval => 2 });
 
 my $cc = Device::CurrentCost->new(device => $device, %args);
 
@@ -42,7 +71,18 @@ $|=1; # don't buffer output
 
 while (1) {
   my $msg = $cc->read() or next;
-  print $msg->summary,"\n";
+  if ($verbose == 0) {
+    $msg->has_readings or next;
+    print $msg->value, ' ', $msg->units, "\n";
+  } elsif ($verbose == 1) {
+    $msg->has_readings or next;
+    print 'Total: ', $msg->value, ' ', $msg->units, "\n";
+    foreach my $phase (1..3) {
+      print 'Phase ', $phase, ': ', $msg->value($phase), " ", $msg->units, "\n";
+    }
+  } else {
+    print $msg->summary,"\n";
+  }
 }
 
 =head1 SEE ALSO
