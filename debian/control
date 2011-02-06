@@ -11,4 +11,4 @@ Package: libdevice-currentcost-perl
 Architecture: all
 Depends: ${perl:Depends}, ${misc:Depends}
 Description: Device::CurrentCost Perl Module
- Blah blah blah
+ Low-level API for reading from Current Cost energy meters.
