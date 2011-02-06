@@ -1,5 +1,6 @@
-libdevice-currentcost-perl (0.1-1) unstable; urgency=low
+libdevice-currentcost-perl (1.110370-1) unstable; urgency=low
 
   * Initial release.
 
- -- Mark Hindess <soft-debian@temporalanomaly.com>  Sun, 16 Jan 2011 22:44:22 +0000
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Sun,  6 Feb 2011 20:20:43 +0000
+
