@@ -152,7 +152,10 @@ sub open {
   my $self = shift;
   my $dev = $self->device;
   print STDERR 'Opening serial port: ', $dev, "\n" if DEBUG;
-  sysopen my $fh, $dev, O_RDWR|O_NOCTTY|O_NDELAY
+  my $flags = O_RDWR;
+  eval { $flags |= O_NOCTTY }; # ignore undefined error
+  eval { $flags |= O_NDELAY }; # ignore undefined error
+  sysopen my $fh, $dev, $flags
     or croak "sysopen of '$dev' failed: $!";
   $fh->autoflush(1);
   binmode($fh);
