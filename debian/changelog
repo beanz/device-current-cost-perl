@@ -1,3 +1,9 @@
+libdevice-currentcost-perl (1.110390-1) unstable; urgency=low
+
+  * Fix tests on non-linux platforms.
+
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Tue,  8 Feb 2011 22:59:18 +0000
+
 libdevice-currentcost-perl (1.110370-1) unstable; urgency=low
 
   * Initial release.

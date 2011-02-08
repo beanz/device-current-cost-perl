@@ -1,6 +1,7 @@
 Revision history for Perl extension Device::CurrentCost.
 
 {{$NEXT}}
+    - Fix tests on non-linux platforms.
 
 1.110370  2011-02-06 20:35:11 Europe/London
     - Initial release.
