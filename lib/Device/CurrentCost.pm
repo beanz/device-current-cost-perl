@@ -257,6 +257,7 @@ sub _discard_buffer_check {
   my $self = shift;
   if ($self->{buf} ne '' &&
       $self->{_last_read} < ($self->_time_now - $self->{discard_timeout})) {
+    carp "Discarding '", $self->{buf}, "'";
     $self->{buf} = '';
   }
 }
