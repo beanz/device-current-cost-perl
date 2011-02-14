@@ -6,11 +6,12 @@ use strict;
 use constant {
   DEBUG => $ENV{DEVICE_CURRENT_COST_TEST_DEBUG}
 };
-use Test::More tests => 88;
+use Test::More tests => 91;
 use POSIX qw/:termios_h/;
 
 $|=1;
 use_ok('Device::CurrentCost');
+use_ok('Device::CurrentCost::Message');
 BEGIN { use_ok('Device::CurrentCost::Constants'); }
 
 my $dev = Device::CurrentCost->new(device => 't/log/envy.reading.xml');
@@ -57,6 +58,7 @@ is($dev->posix_baud, POSIX::B9600, '... posix baud rate');
 $msg = $dev->read(1);
 ok($msg, '... reading');
 ok(!$msg->has_history, '... no history');
+is_deeply($msg->history, {}, '... empty history hash');
 ok($msg->has_readings, '... has readings');
 is($msg->device_version, 'v1.06', '... device version');
 is($msg->device, 'CC02', '... device');
@@ -289,6 +291,10 @@ is($msg->summary,
 $dev->{baud} = 9900;
 is(test_error(sub { $dev->posix_baud }),
    "Unsupported baud rate: 9900\n", '... unsupported baud rate');
+
+is(test_error(sub { Device::CurrentCost::Message->new }),
+   'Device::CurrentCost::Message->new: message parameter is required',
+   'message error');
 
 sub test_error {
   eval { shift->() };
