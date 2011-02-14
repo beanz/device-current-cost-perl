@@ -246,7 +246,7 @@ B<IMPORTANT:> This API is still subject to change.
 sub read_one {
   my ($self, $rbuf) = @_;
   return unless ($$rbuf);
-  if ($$rbuf =~ s!(<msg>.*?</msg>)\s*!!) {
+  if ($$rbuf =~ s!^\s*(<msg>.*?</msg>)\s*!!) {
     return Device::CurrentCost::Message->new(message => $1);
   } else {
     return;
