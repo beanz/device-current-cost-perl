@@ -21,6 +21,14 @@ package Device::CurrentCost;
                                          type => CURRENT_COST_CLASSIC);
   ...
 
+  open my $cclog, '<', 'currentcost.log' or die $!;
+  my $cc = Device::CurrentCost->new(filehandle => $cclog);
+
+  while (1) {
+    my $msg = $cc->read() or next;
+    print $msg->summary, "\n";
+  }
+
 =head1 DESCRIPTION
 
 Module for reading from Current Cost energy meters.
@@ -56,8 +64,14 @@ supported parameters are:
 
 =item device
 
-The name of the device to connect to.  The value should be a tty device
-name, e.g. C</dev/ttyUSB0>.  This parameter is mandatory.
+The name of the device to connect to.  The value should be a tty
+device name, e.g. C</dev/ttyUSB0> but a pipe or plain file should also
+work.  This parameter is mandatory if B<filehandle> is not given.
+
+=item filehandle
+
+A filehandle to read from.  This parameter is mandatory if B<device> is
+not given.
 
 =item type
 
@@ -75,15 +89,17 @@ is either C<57600> (for Envy) or C<9600> (for classic).
 
 sub new {
   my ($pkg, %p) = @_;
-  croak $pkg.q{->new: 'device' parameter is required}
-    unless (exists $p{device});
   my $self = bless {
                     buf => '',
                     discard_timeout => 1,
                     type => CURRENT_COST_ENVY,
                     %p
                    }, $pkg;
-  $self->open();
+  unless (exists $p{filehandle}) {
+    croak $pkg.q{->new: 'device' parameter is required}
+      unless (exists $p{device});
+    $self->open();
+  }
   $self;
 }
 
