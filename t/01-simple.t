@@ -7,7 +7,6 @@ use constant {
   DEBUG => $ENV{DEVICE_CURRENT_COST_TEST_DEBUG}
 };
 use Test::More tests => 88;
-use t::Helpers qw/test_error/;
 use POSIX qw/:termios_h/;
 
 $|=1;
@@ -289,3 +288,10 @@ is($msg->summary,
 $dev->{baud} = 9900;
 is(test_error(sub { $dev->posix_baud }),
    "Unsupported baud rate: 9900\n", '... unsupported baud rate');
+
+sub test_error {
+  eval { shift->() };
+  local $_ = $@;
+  s/\s+at\s.*$//s;
+  $_;
+}
