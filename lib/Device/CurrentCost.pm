@@ -256,7 +256,7 @@ sub read_one {
   my ($self, $rbuf) = @_;
   return unless ($$rbuf);
   print STDERR 'Read one from !', $$rbuf, "!\n" if DEBUG;
-  if ($$rbuf =~ s!^\s*(<msg>.*?</msg>)\s*!!) {
+  if ($$rbuf =~ s!^\s*(<msg>.*?</msg>)[\r\n ]*!!) {
     my $msg = Device::CurrentCost::Message->new(message => $1);
     my $t = $self->_time_now;
     if ($msg->has_history) {

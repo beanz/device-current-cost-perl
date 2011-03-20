@@ -1,6 +1,7 @@
 Revision history for Perl extension Device::CurrentCost.
 
 {{$NEXT}}
+    - Minor regexp improvement.
 
 1.110790  2011-03-20 09:19:26 Europe/London
     - Add history API.
