@@ -1,6 +1,8 @@
 Revision history for Perl extension Device::CurrentCost.
 
 {{$NEXT}}
+
+1.110790  2011-03-20 09:19:26 Europe/London
     - Add history API.
 
 1.110390  2011-02-08 22:59:34 Europe/London
