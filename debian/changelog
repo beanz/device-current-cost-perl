@@ -2,7 +2,7 @@ libdevice-currentcost-perl (1.110791-1) unstable; urgency=low
 
   * Minor regexp improvement.
 
- -- Mark Hindess <soft-debian@temporalanomaly.com>  Sun, 20 Mar 2011 13:10:00 +0000
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Sun, 20 Mar 2011 13:03:26 +0000
 
 libdevice-currentcost-perl (1.110790-1) unstable; urgency=low
 
