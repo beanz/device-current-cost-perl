@@ -116,10 +116,10 @@ sub message { shift->{message} }
 sub _parse_field {
   my ($self, $field, $default) = @_;
   return $self->{$field} if (exists $self->{$field});
-  if ($self->message =~ m!<$field>(.*?)</$field>!) {
+  if ($self->message =~ m!<$field>(.*?)</$field>!s) {
     my $v = $1;
     $self->{$field} =
-      ($v =~ m!<([^>]+)>(.*?)</\1>!) ? { value => $2, units => $1 } : $v;
+      ($v =~ m!<([^>]+)>(.*?)</\1>!s) ? { value => $2, units => $1 } : $v;
   } elsif (defined $default) {
     return $default;
   } else {
