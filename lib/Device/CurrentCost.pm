@@ -83,6 +83,13 @@ C<CURRENT_COST_ENVY>.  The default is C<CURRENT_COST_ENVY>.
 The baud rate for the device.  The default is derived from the type and
 is either C<57600> (for Envy) or C<9600> (for classic).
 
+=item history_callback
+
+A function, taking a sensor id, a time interval and a hash reference
+of data as arguments, to be called every time a new complete set of
+history data becomes available.  The data hash reference has keys of
+the number of intervals ago and values of the reading at that time.
+
 =back
 
 =cut
@@ -93,6 +100,7 @@ sub new {
                     buf => '',
                     discard_timeout => 1,
                     type => CURRENT_COST_ENVY,
+                    history_callback => sub {},
                     %p
                    }, $pkg;
   unless (exists $p{filehandle}) {
@@ -227,6 +235,7 @@ sub read {
     unless ($bytes) {
       croak((ref $self).'->read: '.(defined $bytes ? 'closed' : 'error: '.$!));
     }
+    print STDERR 'Read ', $bytes, "bytes\n" if DEBUG;
     $res = $self->read_one(\$self->{buf});
     return $res if (defined $res);
   } while (1);
@@ -246,11 +255,66 @@ B<IMPORTANT:> This API is still subject to change.
 sub read_one {
   my ($self, $rbuf) = @_;
   return unless ($$rbuf);
+  print STDERR 'Read one from !', $$rbuf, "!\n" if DEBUG;
   if ($$rbuf =~ s!^\s*(<msg>.*?</msg>)\s*!!) {
-    return Device::CurrentCost::Message->new(message => $1);
+    my $msg = Device::CurrentCost::Message->new(message => $1);
+    my $t = $self->_time_now;
+    if ($msg->has_history) {
+      my $new = $msg->history;
+      my $our= $self->{history} || ($self->{history} = {});
+      foreach my $sensor (sort keys %$new) {
+        foreach my $interval (sort keys %{$new->{$sensor}}) {
+          foreach my $age (keys %{$new->{$sensor}->{$interval}}) {
+            $our->{$sensor}->{$interval}->{pending}->{$age} =
+              0+$new->{$sensor}->{$interval}->{$age};
+          }
+          if (exists $our->{$sensor}->{$interval}->{pending}->{1} ||
+              ($interval eq 'hours' &&
+               (exists $our->{$sensor}->{$interval}->{pending}->{4} ||
+                exists $our->{$sensor}->{$interval}->{pending}->{2}))) {
+            my $entries = keys %{$our->{$sensor}->{$interval}->{pending}};
+            if ($entries == { years => 4, months => 21, # envy
+                              days => 90, hours => 372 }->{$interval} ||
+                $entries == { years => 4, months => 12, # classic
+                              days => 31, hours => 13 }->{$interval}) {
+              %{$our->{$sensor}->{$interval}->{current}} =
+                %{$our->{$sensor}->{$interval}->{pending}};
+              $our->{$sensor}->{$interval}->{time} = $t;
+              $self->{history_callback}->($sensor, $interval,
+                   $our->{$sensor}->{$interval}->{current});
+            }
+            $our->{$sensor}->{$interval}->{pending} = {};
+          }
+        }
+      }
+    }
+    return $msg;
   } else {
     return;
   }
+}
+
+=method C<sensor_history($sensor, $interval)>
+
+This method returns the most recent complete sensor data for the
+given sensor and the given interval (where interval must be one
+of 'hours', 'days', 'months' or 'years').  The return value is
+a hash reference with keys for 'time' and 'data'.  The 'time'
+value is the time (in seconds since epoch).  The 'data' value
+is a hash reference with keys of the number of intervals ago
+and values of the reading at that time.
+
+It returns undef if no history data has been received yet.
+
+=cut
+
+sub sensor_history {
+  my ($self, $sensor, $interval) = @_;
+  return unless (exists $self->{history}->{$sensor}->{$interval}->{current});
+  return {
+          time => $self->{history}->{$sensor}->{$interval}->{time},
+          data => $self->{history}->{$sensor}->{$interval}->{current}
+         };
 }
 
 sub _discard_buffer_check {

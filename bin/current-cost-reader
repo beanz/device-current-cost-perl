@@ -35,6 +35,10 @@ Print the manual page.
 
 Make output more verbose.
 
+=item B<-history>
+
+Display completed history records when available.
+
 =back
 
 =head1 DESCRIPTION
@@ -50,14 +54,17 @@ use Device::CurrentCost::Constants;
 use Device::CurrentCost;
 use Getopt::Long;
 use Pod::Usage;
+use List::Util qw/max/;
 
 my $help;
 my $man;
 my $verbose = 0;
+my $history = 0;
 my %args;
 GetOptions('help|?' => \$help,
            'man' => \$man,
            'verbose+' => \$verbose,
+           'history+' => \$history,
            'classic' => sub { $args{type} = CURRENT_COST_CLASSIC },
           ) or pod2usage(2);
 pod2usage(1) if ($help);
@@ -65,6 +72,7 @@ pod2usage(-exitstatus => 0, -verbose => 2) if $man;
 my $device = shift || pod2usage({ -message => 'A device parameter is required',
                                   -exitval => 2 });
 
+$args{history_callback} = \&history_callback if ($history);
 my $cc = Device::CurrentCost->new(device => $device, %args);
 
 $|=1; # don't buffer output
@@ -83,6 +91,26 @@ while (1) {
   } else {
     print $msg->summary,"\n";
   }
+}
+
+sub history_callback {
+  my ($sensor, $interval, $data) = @_;
+  my $max = 0;
+  my @rows = ();
+  foreach my $ago (sort { $a <=> $b } keys %{$data}) {
+    $max = max($max, $data->{$ago});
+    push @rows, [ $ago, $data->{$ago} ];
+  }
+  return if ($max == 0);
+  print "History: $sensor $interval ", scalar @rows, "\n";
+  foreach my $row (@rows) {
+    printf "  %3d %12.5f %-50s\n", @$row, bar($row->[1], $max, 50);
+  }
+}
+
+sub bar {
+  my ($val, $max, $chars) = @_;
+  return '#' x int(.5 + (($val/$max) * $chars));
 }
 
 =head1 SEE ALSO

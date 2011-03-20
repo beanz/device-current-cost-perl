@@ -34,6 +34,7 @@ use constant {
 
 use Carp qw/croak carp/;
 use Device::CurrentCost::Constants;
+use List::Util qw/min/;
 
 =method C<new(%parameters)>
 
@@ -345,7 +346,7 @@ sub _parse_history {
   foreach my $span (qw/hours days months years/) {
     my $first = substr $span, 0, 1;
     while ($string =~ m!<$first(\d+)>([^<]+)</$first\1>!mg) {
-      $rec{$span}->{$1} = 0+$2;
+      $rec{$span}->{0+$1} = 0+$2;
     }
   }
   \%rec;
