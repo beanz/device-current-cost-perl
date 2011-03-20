@@ -3,7 +3,7 @@ libdevice-currentcost-perl (1.110792-1) unstable; urgency=low
   * Make reader parser more liberal so it accepts more types of
     input.
 
- -- Mark Hindess <soft-debian@temporalanomaly.com>  Sun, 20 Mar 2011 21:10:57 +0000
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Sun, 20 Mar 2011 21:17:26 +0000
 
 libdevice-currentcost-perl (1.110791-1) unstable; urgency=low
 

@@ -1,6 +1,8 @@
 Revision history for Perl extension Device::CurrentCost.
 
 {{$NEXT}}
+
+1.110792  2011-03-20 21:17:26 Europe/London
     - Make reader parser more liberal so it accepts more types of
       input.
 
