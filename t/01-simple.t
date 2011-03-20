@@ -201,10 +201,12 @@ is(0+$msg->temperature, 21, '... temperature');
 my $history = $dev->sensor_history(0,'days');
 is_deeply($history->{data}, { map { $_=>0 } (1..31) }, '... specific history');
 is_deeply(\@hist,
-          [ [ 0, 'hours', { 2 => 1.3, map { $_*2 => 0 } (2..13) } ],
-            [ 0, 'years', { map { $_ => 0 } (1..4) } ],
-            [ 0, 'months', { map { $_ => 0 } (1..12) } ],
-            [ 0, 'days', { map { $_ => 0 } (1..31) } ] ],
+          [
+           [ 0, 'days', { map { $_ => 0 } (1..31) } ],
+           [ 0, 'hours', { 2 => 1.3, map { $_*2 => 0 } (2..13) } ],
+           [ 0, 'months', { map { $_ => 0 } (1..12) } ],
+           [ 0, 'years', { map { $_ => 0 } (1..4) } ],
+          ],
           '... history callback');
 
 is($msg->summary,
