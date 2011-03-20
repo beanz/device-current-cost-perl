@@ -9,6 +9,6 @@ Homepage: http://search.cpan.org/dist/Device-CurrentCost/
 
 Package: libdevice-currentcost-perl
 Architecture: all
-Depends: ${perl:Depends}, ${misc:Depends}
+Depends: ${perl:Depends}, ${misc:Depends}, libsub-name-perl
 Description: Device::CurrentCost Perl Module
  Low-level API for reading from Current Cost energy meters.
