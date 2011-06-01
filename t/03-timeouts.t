@@ -35,7 +35,7 @@ if ($pid == 0) {
   # parent
   $pipe->reader;
   my $dev = Device::CurrentCost->new(filehandle => $pipe,
-                                     discard_timeout => 0.1);
+                                     discard_timeout => 0.3);
   my $msg = $dev->read(0.5);
   is($msg->value, 1380, 'first value');
   warning_is { $msg = $dev->read(0.05) } '', 'no timeout yet';
