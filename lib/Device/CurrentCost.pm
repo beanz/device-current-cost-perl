@@ -224,7 +224,7 @@ version 1.111950
   use Device::CurrentCost::Constants;
   my $classic = Device::CurrentCost->new(device => '/dev/ttyUSB1',
                                          type => CURRENT_COST_CLASSIC);
-  ...
+  # ...
 
   open my $cclog, '<', 'currentcost.log' or die $!;
   my $cc = Device::CurrentCost->new(filehandle => $cclog);
