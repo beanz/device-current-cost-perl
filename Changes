@@ -1,6 +1,6 @@
 Revision history for Perl extension Device::CurrentCost.
 
-1.111950  2011-07-14 22:24:25 Europe/London
+1.111950  2011-07-14 22:26:31 Europe/London
     - Modify timeout test to make it less error prone.
 
 1.110792  2011-03-20 21:17:26 Europe/London

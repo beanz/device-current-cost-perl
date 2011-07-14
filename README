@@ -76,7 +76,7 @@ METHODS
     Returns the baud rate.
 
   "posix_baud()"
-    Returns the baud rate in POSIX#Termios format.
+    Returns the baud rate in POSIX::Termios format.
 
   "filehandle()"
     Returns the filehandle being used to read from the device.

@@ -298,7 +298,7 @@ Returns the baud rate.
 
 =head2 C<posix_baud()>
 
-Returns the baud rate in L<POSIX#Termios> format.
+Returns the baud rate in L<POSIX::Termios> format.
 
 =head2 C<filehandle()>
 
