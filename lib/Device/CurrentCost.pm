@@ -1,46 +1,12 @@
 use strict;
 use warnings;
 package Device::CurrentCost;
+BEGIN {
+  $Device::CurrentCost::VERSION = '1.111950';
+}
 
 # ABSTRACT: Perl modules for Current Cost energy monitors
 
-=head1 SYNOPSIS
-
-  use Device::CurrentCost;
-  my $envy = Device::CurrentCost->new(device => '/dev/ttyUSB0');
-
-  $|=1; # don't buffer output
-
-  while (1) {
-    my $msg = $envy->read() or next;
-    print $msg->summary, "\n";
-  }
-
-  use Device::CurrentCost::Constants;
-  my $classic = Device::CurrentCost->new(device => '/dev/ttyUSB1',
-                                         type => CURRENT_COST_CLASSIC);
-  ...
-
-  open my $cclog, '<', 'currentcost.log' or die $!;
-  my $cc = Device::CurrentCost->new(filehandle => $cclog);
-
-  while (1) {
-    my $msg = $cc->read() or next;
-    print $msg->summary, "\n";
-  }
-
-=head1 DESCRIPTION
-
-Module for reading from Current Cost energy meters.
-
-B<IMPORTANT:> This is an early release and the API is still subject to
-change.
-
-The API for history is definitely not complete.  This will change soon
-and an mechanism for aggregating the history (which is split across
-many messages) should be added.
-
-=cut
 
 use constant {
   DEBUG => $ENV{DEVICE_CURRENT_COST_DEBUG},
@@ -55,44 +21,6 @@ use IO::Select;
 use POSIX qw/:termios_h/;
 use Time::HiRes;
 
-=method C<new(%parameters)>
-
-This constructor returns a new Current Cost device object.  The
-supported parameters are:
-
-=over
-
-=item device
-
-The name of the device to connect to.  The value should be a tty
-device name, e.g. C</dev/ttyUSB0> but a pipe or plain file should also
-work.  This parameter is mandatory if B<filehandle> is not given.
-
-=item filehandle
-
-A filehandle to read from.  This parameter is mandatory if B<device> is
-not given.
-
-=item type
-
-The type of the device.  Currently either C<CURRENT_COST_CLASSIC> or
-C<CURRENT_COST_ENVY>.  The default is C<CURRENT_COST_ENVY>.
-
-=item baud
-
-The baud rate for the device.  The default is derived from the type and
-is either C<57600> (for Envy) or C<9600> (for classic).
-
-=item history_callback
-
-A function, taking a sensor id, a time interval and a hash reference
-of data as arguments, to be called every time a new complete set of
-history data becomes available.  The data hash reference has keys of
-the number of intervals ago and values of the reading at that time.
-
-=back
-
-=cut
 
 sub new {
   my ($pkg, %p) = @_;
@@ -111,27 +39,12 @@ sub new {
   $self;
 }
 
-=method C<device()>
-
-Returns the path to the device.
-
-=cut
 
 sub device { shift->{device} }
 
-=method C<type()>
-
-Returns the type of the device.
-
-=cut
 
 sub type { shift->{type} }
 
-=method C<baud()>
-
-Returns the baud rate.
-
-=cut
 
 sub baud {
   my $self = shift;
@@ -139,11 +52,6 @@ sub baud {
     $self->type == CURRENT_COST_CLASSIC ? 9600 : 57600;
 }
 
-=method C<posix_baud()>
-
-Returns the baud rate in L<POSIX#Termios> format.
-
-=cut
 
 sub posix_baud {
   my $self = shift;
@@ -158,19 +66,9 @@ sub posix_baud {
   $b;
 }
 
-=method C<filehandle()>
-
-Returns the filehandle being used to read from the device.
-
-=cut
 
 sub filehandle { shift->{filehandle} }
 
-=method C<open()>
-
-This method opens the serial port and configures it.
-
-=cut
 
 sub open {
   my $self = shift;
@@ -209,15 +107,6 @@ sub _termios_config {
     or die "POSIX::Termios->setattr(...) failed: $!\n";
 }
 
-=method C<read($timeout)>
-
-This method blocks until a new message has been received by the
-device.  When a message is received a data structure is returned
-that represents the data received.
-
-B<IMPORTANT:> This API is still subject to change.
-
-=cut
 
 sub read {
   my ($self, $timeout) = @_;
@@ -241,16 +130,6 @@ sub read {
   } while (1);
 }
 
-=method C<read_one(\$buffer)>
-
-This method attempts to remove a single Current Cost message from the
-buffer passed in via the scalar reference.  When a message is removed
-a data structure is returned that represents the data received.  If
-insufficient data is available then undef is returned.
-
-B<IMPORTANT:> This API is still subject to change.
-
-=cut
 
 sub read_one {
   my ($self, $rbuf) = @_;
@@ -294,19 +173,6 @@ sub read_one {
   }
 }
 
-=method C<sensor_history($sensor, $interval)>
-
-This method returns the most recent complete sensor data for the
-given sensor and the given interval (where interval must be one
-of 'hours', 'days', 'months' or 'years').  The return value is
-a hash reference with keys for 'time' and 'data'.  The 'time'
-value is the time (in seconds since epoch).  The 'data' value
-is a hash reference with keys of the number of intervals ago
-and values of the reading at that time.
-
-It returns undef if no history data has been received yet.
-
-=cut
 
 sub sensor_history {
   my ($self, $sensor, $interval) = @_;
@@ -331,3 +197,156 @@ sub _time_now {
 }
 
 1;
+
+__END__
+=pod
+
+=head1 NAME
+
+Device::CurrentCost - Perl modules for Current Cost energy monitors
+
+=head1 VERSION
+
+version 1.111950
+
+=head1 SYNOPSIS
+
+  use Device::CurrentCost;
+  my $envy = Device::CurrentCost->new(device => '/dev/ttyUSB0');
+
+  $|=1; # don't buffer output
+
+  while (1) {
+    my $msg = $envy->read() or next;
+    print $msg->summary, "\n";
+  }
+
+  use Device::CurrentCost::Constants;
+  my $classic = Device::CurrentCost->new(device => '/dev/ttyUSB1',
+                                         type => CURRENT_COST_CLASSIC);
+  ...
+
+  open my $cclog, '<', 'currentcost.log' or die $!;
+  my $cc = Device::CurrentCost->new(filehandle => $cclog);
+
+  while (1) {
+    my $msg = $cc->read() or next;
+    print $msg->summary, "\n";
+  }
+
+=head1 DESCRIPTION
+
+Module for reading from Current Cost energy meters.
+
+B<IMPORTANT:> This is an early release and the API is still subject to
+change.
+
+The API for history is definitely not complete.  This will change soon
+and an mechanism for aggregating the history (which is split across
+many messages) should be added.
+
+=head1 METHODS
+
+=head2 C<new(%parameters)>
+
+This constructor returns a new Current Cost device object.  The
+supported parameters are:
+
+=over
+
+=item device
+
+The name of the device to connect to.  The value should be a tty
+device name, e.g. C</dev/ttyUSB0> but a pipe or plain file should also
+work.  This parameter is mandatory if B<filehandle> is not given.
+
+=item filehandle
+
+A filehandle to read from.  This parameter is mandatory if B<device> is
+not given.
+
+=item type
+
+The type of the device.  Currently either C<CURRENT_COST_CLASSIC> or
+C<CURRENT_COST_ENVY>.  The default is C<CURRENT_COST_ENVY>.
+
+=item baud
+
+The baud rate for the device.  The default is derived from the type and
+is either C<57600> (for Envy) or C<9600> (for classic).
+
+=item history_callback
+
+A function, taking a sensor id, a time interval and a hash reference
+of data as arguments, to be called every time a new complete set of
+history data becomes available.  The data hash reference has keys of
+the number of intervals ago and values of the reading at that time.
+
+=back
+
+=head2 C<device()>
+
+Returns the path to the device.
+
+=head2 C<type()>
+
+Returns the type of the device.
+
+=head2 C<baud()>
+
+Returns the baud rate.
+
+=head2 C<posix_baud()>
+
+Returns the baud rate in L<POSIX#Termios> format.
+
+=head2 C<filehandle()>
+
+Returns the filehandle being used to read from the device.
+
+=head2 C<open()>
+
+This method opens the serial port and configures it.
+
+=head2 C<read($timeout)>
+
+This method blocks until a new message has been received by the
+device.  When a message is received a data structure is returned
+that represents the data received.
+
+B<IMPORTANT:> This API is still subject to change.
+
+=head2 C<read_one(\$buffer)>
+
+This method attempts to remove a single Current Cost message from the
+buffer passed in via the scalar reference.  When a message is removed
+a data structure is returned that represents the data received.  If
+insufficient data is available then undef is returned.
+
+B<IMPORTANT:> This API is still subject to change.
+
+=head2 C<sensor_history($sensor, $interval)>
+
+This method returns the most recent complete sensor data for the
+given sensor and the given interval (where interval must be one
+of 'hours', 'days', 'months' or 'years').  The return value is
+a hash reference with keys for 'time' and 'data'.  The 'time'
+value is the time (in seconds since epoch).  The 'data' value
+is a hash reference with keys of the number of intervals ago
+and values of the reading at that time.
+
+It returns undef if no history data has been received yet.
+
+=head1 AUTHOR
+
+Mark Hindess <soft-cpan@temporalanomaly.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2011 by Mark Hindess.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
