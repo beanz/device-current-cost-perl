@@ -19,7 +19,7 @@ package Device::CurrentCost;
   use Device::CurrentCost::Constants;
   my $classic = Device::CurrentCost->new(device => '/dev/ttyUSB1',
                                          type => CURRENT_COST_CLASSIC);
-  ...
+  # ...
 
   open my $cclog, '<', 'currentcost.log' or die $!;
   my $cc = Device::CurrentCost->new(filehandle => $cclog);
@@ -141,7 +141,7 @@ sub baud {
 
 =method C<posix_baud()>
 
-Returns the baud rate in L<POSIX#Termios> format.
+Returns the baud rate in L<POSIX::Termios|POSIX/POSIX::Termios> format.
 
 =cut
 
