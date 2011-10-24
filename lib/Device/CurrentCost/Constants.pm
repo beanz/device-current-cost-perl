@@ -1,18 +1,12 @@
 use strict;
 use warnings;
 package Device::CurrentCost::Constants;
+BEGIN {
+  $Device::CurrentCost::Constants::VERSION = '1.112970';
+}
 
 # ABSTRACT: Module to export constants for Current Cost devices
 
-=head1 SYNOPSIS
-
-  use Device::CurrentCost::Constants;
-
-=head1 DESCRIPTION
-
-Module to export constants for Current Cost devices
-
-=cut
 
 my %constants =
   (
@@ -37,14 +31,46 @@ sub import {
   }
 }
 
+
+sub current_cost_type_string {
+  $names{$_[0]}
+}
+
+__END__
+=pod
+
+=head1 NAME
+
+Device::CurrentCost::Constants - Module to export constants for Current Cost devices
+
+=head1 VERSION
+
+version 1.112970
+
+=head1 SYNOPSIS
+
+  use Device::CurrentCost::Constants;
+
+=head1 DESCRIPTION
+
+Module to export constants for Current Cost devices
+
 =head1 C<FUNCTIONS>
 
 =head2 C<current_cost_type_string( $type )>
 
 Returns a string describing the given Current Cost device type.
 
+=head1 AUTHOR
+
+Mark Hindess <soft-cpan@temporalanomaly.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2011 by Mark Hindess.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
 =cut
 
-sub current_cost_type_string {
-  $names{$_[0]}
-}

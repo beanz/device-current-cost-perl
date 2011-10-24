@@ -1,32 +1,12 @@
 use strict;
 use warnings;
 package Device::CurrentCost::Message;
+BEGIN {
+  $Device::CurrentCost::Message::VERSION = '1.112970';
+}
 
 # ABSTRACT: Perl modules for Current Cost energy monitor messages
 
-=head1 SYNOPSIS
-
-  use Device::CurrentCost::Message;
-  my $msg = Device::CurrentCost::Message->new(message => '<msg>...</msg>');
-  print 'Device: ', $msg->device, ' ', $msg->device_version, "\n";
-  if ($msg->has_readings) {
-    print 'Sensor: ', $msg->sensor, '.', $msg->id, ' (', $msg->type, ")\n";
-    print 'Total: ', $msg->value, ' ', $msg->units, "\n";
-    foreach my $phase (1..3) {
-      print 'Phase ', $phase, ': ',
-        $msg->value($phase)+0, " ", $msg->units, "\n";
-    }
-  }
-
-  use Data::Dumper;
-  print Data::Dumper->Dump([$msg->history]) if ($msg->has_history);
-
-  # or
-  print $msg->summary, "\n";
-
-=head1 DESCRIPTION
-
-=cut
 
 use constant {
   DEBUG => $ENV{DEVICE_CURRENT_COST_DEBUG},
@@ -36,21 +16,6 @@ use Carp qw/croak carp/;
 use Device::CurrentCost::Constants;
 use List::Util qw/min/;
 
-=method C<new(%parameters)>
-
-This constructor returns a new Current Cost message object.
-The supported parameters are:
-
-=over
-
-=item message
-
-The message data.  Usually a string like 'C<< <msg>...</msg> >>'.
-This parameter is required.
-
-=back
-
-=cut
 
 sub new {
   my ($pkg, %p) = @_;
@@ -59,11 +24,6 @@ sub new {
   $self;
 }
 
-=method C<device_type()>
-
-Returns the type of the device that created the message.
-
-=cut
 
 sub device_type {
   my $self = shift;
@@ -72,11 +32,6 @@ sub device_type {
     $self->message =~ m!<src><name>! ? CURRENT_COST_CLASSIC : CURRENT_COST_ENVY;
 }
 
-=method C<device()>
-
-Returns the name of the device that created the message.
-
-=cut
 
 sub device {
   my $self = shift;
@@ -84,11 +39,6 @@ sub device {
   $self->_find_device->[0]
 }
 
-=method C<device_version()>
-
-Returns the version of the device that created the message.
-
-=cut
 
 sub device_version {
   my $self = shift;
@@ -105,11 +55,6 @@ sub _find_device {
         [ split /-/, $self->_parse_field('src'), 2 ];
 }
 
-=method C<message()>
-
-Returns the raw data of the message.
-
-=cut
 
 sub message { shift->{message} }
 
@@ -127,28 +72,13 @@ sub _parse_field {
   }
 }
 
-=method C<dsb()>
-
-Returns the days since boot field of the message.
-
-=cut
 
 sub dsb { shift->_parse_field('dsb') }
 
 
-=method C<days_since_boot()>
-
-Returns the days since boot field of the message.
-
-=cut
 
 sub days_since_boot { shift->dsb }
 
-=method C<time()>
-
-Returns the time field of the message in C<HH:MM:SS> format.
-
-=cut
 
 sub time {
   my $self = shift;
@@ -160,11 +90,6 @@ sub time {
         $self->_parse_field('sec')
 }
 
-=method C<time_in_seconds()>
-
-Returns the time field of the message in seconds.
-
-=cut
 
 sub time_in_seconds {
   my $self = shift;
@@ -173,79 +98,33 @@ sub time_in_seconds {
   $self->{time_in_seconds} = $h*3600 + $m*60 + $s;
 }
 
-=method C<boot_time()>
-
-Returns the time since boot reported by the message in seconds.
-
-=cut
 
 sub boot_time {
   my $self = shift;
   $self->days_since_boot * 86400 + $self->time_in_seconds
 }
 
-=method C<sensor()>
-
-Returns the sensor number field of the message.  A classic monitor
-supports only one sensor so 0 is returned.
-
-=cut
 
 sub sensor { shift->_parse_field('sensor', 0) }
 
-=method C<id()>
-
-Returns the id field of the message.
-
-=cut
 
 sub id { shift->_parse_field('id') }
 
-=method C<type()>
-
-Returns the sensor type field of the message.
-
-=cut
 
 sub type { shift->_parse_field('type') }
 
-=method C<tmpr()>
-
-Returns the tmpr/temperature field of the message.
-
-=cut
 
 sub tmpr { shift->_parse_field('tmpr') }
 
-=method C<temperature()>
-
-Returns the temperature field of the message.
-
-=cut
 
 sub temperature { shift->tmpr }
 
-=method C<has_history()>
-
-Returns true if the message contains history data.
-
-=cut
 
 sub has_history { shift->message =~ /<hist>/ }
 
-=method C<has_readings()>
-
-Returns true if the message contains current data.
-
-=cut
 
 sub has_readings { shift->message =~ /<ch1>/ }
 
-=method C<units()>
-
-Returns the units of the current data readings in the message.
-
-=cut
 
 sub units {
   my $self = shift;
@@ -253,13 +132,6 @@ sub units {
   $ch1->{units}
 }
 
-=method C<value( [$channel] )>
-
-Returns the value of the current data reading for the given channel
-(phase) in the message.  If no channel is given then the total of all
-the current data readings for all channels is returned.
-
-=cut
 
 sub value {
   my ($self, $channel) = @_;
@@ -274,13 +146,6 @@ sub value {
   $self->{total}
 }
 
-=method C<summary( [$prefix] )>
-
-Returns the string summary of the data in the message.  Each line of the
-string is prefixed by the given prefix or the empty string if the prefix
-is not supplied.
-
-=cut
 
 sub summary {
   my ($self, $prefix) = @_;
@@ -313,11 +178,6 @@ sub summary {
   $str
 }
 
-=method C<history()>
-
-Returns a data structure contain any history data from the message.
-
-=cut
 
 sub history {
   my $self = shift;
@@ -353,6 +213,155 @@ sub _parse_history {
 }
 
 1;
+
+
+
+=pod
+
+=head1 NAME
+
+Device::CurrentCost::Message - Perl modules for Current Cost energy monitor messages
+
+=head1 VERSION
+
+version 1.112970
+
+=head1 SYNOPSIS
+
+  use Device::CurrentCost::Message;
+  my $msg = Device::CurrentCost::Message->new(message => '<msg>...</msg>');
+  print 'Device: ', $msg->device, ' ', $msg->device_version, "\n";
+  if ($msg->has_readings) {
+    print 'Sensor: ', $msg->sensor, '.', $msg->id, ' (', $msg->type, ")\n";
+    print 'Total: ', $msg->value, ' ', $msg->units, "\n";
+    foreach my $phase (1..3) {
+      print 'Phase ', $phase, ': ',
+        $msg->value($phase)+0, " ", $msg->units, "\n";
+    }
+  }
+
+  use Data::Dumper;
+  print Data::Dumper->Dump([$msg->history]) if ($msg->has_history);
+
+  # or
+  print $msg->summary, "\n";
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 C<new(%parameters)>
+
+This constructor returns a new Current Cost message object.
+The supported parameters are:
+
+=over
+
+=item message
+
+The message data.  Usually a string like 'C<< <msg>...</msg> >>'.
+This parameter is required.
+
+=back
+
+=head2 C<device_type()>
+
+Returns the type of the device that created the message.
+
+=head2 C<device()>
+
+Returns the name of the device that created the message.
+
+=head2 C<device_version()>
+
+Returns the version of the device that created the message.
+
+=head2 C<message()>
+
+Returns the raw data of the message.
+
+=head2 C<dsb()>
+
+Returns the days since boot field of the message.
+
+=head2 C<days_since_boot()>
+
+Returns the days since boot field of the message.
+
+=head2 C<time()>
+
+Returns the time field of the message in C<HH:MM:SS> format.
+
+=head2 C<time_in_seconds()>
+
+Returns the time field of the message in seconds.
+
+=head2 C<boot_time()>
+
+Returns the time since boot reported by the message in seconds.
+
+=head2 C<sensor()>
+
+Returns the sensor number field of the message.  A classic monitor
+supports only one sensor so 0 is returned.
+
+=head2 C<id()>
+
+Returns the id field of the message.
+
+=head2 C<type()>
+
+Returns the sensor type field of the message.
+
+=head2 C<tmpr()>
+
+Returns the tmpr/temperature field of the message.
+
+=head2 C<temperature()>
+
+Returns the temperature field of the message.
+
+=head2 C<has_history()>
+
+Returns true if the message contains history data.
+
+=head2 C<has_readings()>
+
+Returns true if the message contains current data.
+
+=head2 C<units()>
+
+Returns the units of the current data readings in the message.
+
+=head2 C<value( [$channel] )>
+
+Returns the value of the current data reading for the given channel
+(phase) in the message.  If no channel is given then the total of all
+the current data readings for all channels is returned.
+
+=head2 C<summary( [$prefix] )>
+
+Returns the string summary of the data in the message.  Each line of the
+string is prefixed by the given prefix or the empty string if the prefix
+is not supplied.
+
+=head2 C<history()>
+
+Returns a data structure contain any history data from the message.
+
+=head1 AUTHOR
+
+Mark Hindess <soft-cpan@temporalanomaly.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2011 by Mark Hindess.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
 
 __END__
 
