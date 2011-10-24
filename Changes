@@ -1,7 +1,8 @@
 Revision history for Perl extension Device::CurrentCost.
 
-1.111950  2011-07-14 22:30:14 Europe/London
+1.112970  2011-10-24 22:16:21 Europe/London
     - Modify timeout test to make it less error prone.
+    - Pod link fix.
 
 1.110792  2011-03-20 21:17:26 Europe/London
     - Make reader parser more liberal so it accepts more types of
