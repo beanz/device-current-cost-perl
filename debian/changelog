@@ -1,3 +1,10 @@
+libdevice-currentcost-perl (1.112970-1) unstable; urgency=low
+
+  * Trivial Pod fix.
+  * Make test more robust.
+
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Mon, 24 Oct 2011 22:15:28 +0100
+
 libdevice-currentcost-perl (1.110792-1) unstable; urgency=low
 
   * Make reader parser more liberal so it accepts more types of
