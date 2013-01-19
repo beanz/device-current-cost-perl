@@ -32,11 +32,9 @@ sub new {
                     history_callback => sub {},
                     %p
                    }, $pkg;
-  unless (exists $p{filehandle}) {
-    croak $pkg.q{->new: 'device' parameter is required}
-      unless (exists $p{device});
-    $self->open();
-  }
+  croak $pkg.q{->new: 'device' parameter is required}
+    unless (exists $p{device} or exists $p{filehandle});
+  $self->open();
   $self;
 }
 
@@ -62,24 +60,29 @@ sub serial_port { shift->{serial_port} }
 
 sub open {
   my $self = shift;
-  my $dev = $self->device;
-  print STDERR 'Opening serial port: ', $dev, "\n" if DEBUG;
-  my $fh = gensym();
-  my $s = tie *$fh, 'Device::SerialPort', $dev or
-    croak "Could not tie serial port, $dev, to file handle: $!";
-  foreach my $setting ([ baudrate => $self->baud ],
-                       [ databits => 8 ],
-                       [ parity => 'none' ],
-                       [ stopbits => 1 ],
-                       [ datatype => 'raw' ]) {
-    my ($setter, @v) = @$setting;
-    $s->$setter(@v);
+
+  my $fh = $self->filehandle;
+  unless ($fh) {
+    my $dev = $self->device;
+    print STDERR 'Opening serial port: ', $dev, "\n" if DEBUG;
+    my $fh = gensym();
+    my $s = tie *$fh, 'Device::SerialPort', $dev or
+      croak "Could not tie serial port, $dev, to file handle: $!";
+    foreach my $setting ([ baudrate => $self->baud ],
+                         [ databits => 8 ],
+                         [ parity => 'none' ],
+                         [ stopbits => 1 ],
+                         [ datatype => 'raw' ]) {
+      my ($setter, @v) = @$setting;
+      $s->$setter(@v);
+    }
+    $s->write_settings();
+    sysopen($fh, $dev, O_RDWR|O_NOCTTY|O_NDELAY) or
+      croak "sysopen of '$dev' failed: $!";
+    $self->{serial_port} = $s;
+    $self->{filehandle} = $fh;
   }
-  $s->write_settings();
-  sysopen($fh, $dev, O_RDWR|O_NOCTTY|O_NDELAY) or
-    croak "sysopen of '$dev' failed: $!";
-  $self->{serial_port} = $s;
-  return $self->{filehandle} = $fh;
+  $self->filehandle;
 }
 
 
