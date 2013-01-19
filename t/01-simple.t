@@ -6,20 +6,19 @@ use strict;
 use constant {
   DEBUG => $ENV{DEVICE_CURRENT_COST_TEST_DEBUG}
 };
-use Test::More tests => 95;
-use POSIX qw/:termios_h/;
+use Test::More;
 
 $|=1;
 use_ok('Device::CurrentCost');
 use_ok('Device::CurrentCost::Message');
 BEGIN { use_ok('Device::CurrentCost::Constants'); }
 
-my $dev = Device::CurrentCost->new(device => 't/log/envy.reading.xml');
+open my $fh, 't/log/envy.reading.xml';
+my $dev = Device::CurrentCost->new(filehandle => $fh);
 is($dev->type, CURRENT_COST_ENVY, 'envy device');
 is(current_cost_type_string($dev->type), 'Envy', '... type name');
 is($dev->baud, 57600, '... baud rate');
 is($dev->baud, 57600, '... baud rate (cache)');
-is($dev->posix_baud, 0010001, '... posix baud rate');
 my $msg = $dev->read;
 ok($msg, '... reading');
 ok(!$msg->has_history, '... no history');
@@ -50,12 +49,12 @@ is($msg->summary, q{Device: CC128 v0.11
 is(test_error(sub { $dev->read }),
    'Device::CurrentCost->read: closed', '... eof');
 
-$dev = Device::CurrentCost->new(device => 't/log/classic.reading.xml',
+open $fh, 't/log/classic.reading.xml';
+$dev = Device::CurrentCost->new(filehandle => $fh,
                                 type => CURRENT_COST_CLASSIC);
 is($dev->type, CURRENT_COST_CLASSIC, 'classic device');
 is(current_cost_type_string($dev->type), 'Classic', '... type name');
 is($dev->baud, 9600, '... baud rate');
-is($dev->posix_baud, POSIX::B9600, '... posix baud rate');
 $msg = $dev->read(1);
 ok($msg, '... reading');
 ok(!$msg->has_history, '... no history');
@@ -86,10 +85,11 @@ is(test_error(sub { Device::CurrentCost->new() }),
    'constructor with missing device parameter');
 
 like(test_error(sub { Device::CurrentCost->new(device => 't/not-found') }),
-   qr!^sysopen of 't/not-found' failed: !,
+   qr!^Could not tie serial port, t/not-found, to file handle: !,
    'constructor with invalid device');
 
-$dev = Device::CurrentCost->new(device => 't/log/classic.too.short.xml',
+open $fh, 't/log/classic.too.short.xml';
+$dev = Device::CurrentCost->new(filehandle => $fh,
                                 type => CURRENT_COST_CLASSIC);
 is($dev->type, CURRENT_COST_CLASSIC, 'classic device');
 is(current_cost_type_string($dev->type), 'Classic', '... type name');
@@ -97,7 +97,8 @@ is($dev->baud, 9600, '... baud rate');
 is(test_error(sub { $dev->read }),
    'Device::CurrentCost->read: closed', '... incomplete message');
 
-$dev = Device::CurrentCost->new(device => 't/log/envy.history.xml');
+open $fh, 't/log/envy.history.xml';
+$dev = Device::CurrentCost->new(filehandle => $fh);
 $msg = $dev->read();
 ok($msg, '... reading');
 ok($msg->has_history, '... has history');
@@ -179,7 +180,8 @@ is($msg->summary, q{Device: CC128 v0.11
 }, '... summary');
 
 my @hist = ();
-$dev = Device::CurrentCost->new(device => 't/log/classic.history.xml',
+open $fh, 't/log/classic.history.xml';
+$dev = Device::CurrentCost->new(filehandle => $fh,
                                 history_callback => sub { push @hist, \@_ });
 $msg = $dev->read();
 ok($msg, '... reading');
@@ -303,13 +305,11 @@ is($msg->summary,
   Phase 1: 1469 watts
 }, '... summary');
 
-$dev->{baud} = 9900;
-is(test_error(sub { $dev->posix_baud }),
-   "Unsupported baud rate: 9900\n", '... unsupported baud rate');
-
 is(test_error(sub { Device::CurrentCost::Message->new }),
    'Device::CurrentCost::Message->new: message parameter is required',
    'message error');
+
+done_testing;
 
 sub test_error {
   eval { shift->() };

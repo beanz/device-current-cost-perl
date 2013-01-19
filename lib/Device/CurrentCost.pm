@@ -49,10 +49,11 @@ use constant {
 use Carp qw/croak carp/;
 use Device::CurrentCost::Constants;
 use Device::CurrentCost::Message;
+use Device::SerialPort qw/:PARAM :STAT 0.07/;
 use Fcntl;
 use IO::Handle;
 use IO::Select;
-use POSIX qw/:termios_h/;
+use Symbol qw(gensym);
 use Time::HiRes;
 
 =method C<new(%parameters)>
@@ -103,11 +104,9 @@ sub new {
                     history_callback => sub {},
                     %p
                    }, $pkg;
-  unless (exists $p{filehandle}) {
-    croak $pkg.q{->new: 'device' parameter is required}
-      unless (exists $p{device});
-    $self->open();
-  }
+  croak $pkg.q{->new: 'device' parameter is required}
+    unless (exists $p{device} or exists $p{filehandle});
+  $self->open();
   $self;
 }
 
@@ -139,25 +138,6 @@ sub baud {
     $self->type == CURRENT_COST_CLASSIC ? 9600 : 57600;
 }
 
-=method C<posix_baud()>
-
-Returns the baud rate in L<POSIX::Termios|POSIX/POSIX::Termios> format.
-
-=cut
-
-sub posix_baud {
-  my $self = shift;
-  my $baud = $self->baud;
-  my $b;
-  if ($baud == 57600) {
-    $b = 0010001; ## no critic
-  } else {
-    eval qq/\$b = \&POSIX::B$baud/; ## no critic
-    die "Unsupported baud rate: $baud\n" if ($@);
-  }
-  $b;
-}
-
 =method C<filehandle()>
 
 Returns the filehandle being used to read from the device.
@@ -165,6 +145,14 @@ Returns the filehandle being used to read from the device.
 =cut
 
 sub filehandle { shift->{filehandle} }
+
+=method C<serial_port()>
+
+Returns the Device::SerialPort object for the device.
+
+=cut
+
+sub serial_port { shift->{serial_port} }
 
 =method C<open()>
 
@@ -174,39 +162,29 @@ This method opens the serial port and configures it.
 
 sub open {
   my $self = shift;
-  my $dev = $self->device;
-  print STDERR 'Opening serial port: ', $dev, "\n" if DEBUG;
-  my $flags = O_RDWR;
-  eval { $flags |= O_NOCTTY }; # ignore undefined error
-  eval { $flags |= O_NDELAY }; # ignore undefined error
-  sysopen my $fh, $dev, $flags
-    or croak "sysopen of '$dev' failed: $!";
-  $fh->autoflush(1);
-  binmode($fh);
-  if (-c $fh) {
-    $self->_termios_config($fh);
-  }
-  return $self->{filehandle} = $fh;
-}
 
-sub _termios_config {
-  my ($self, $fh) = @_;
-  my $fd = fileno($fh);
-  my $termios = POSIX::Termios->new;
-  $termios->getattr($fd) or die "POSIX::Termios->getattr(...) failed: $!\n";
-  my $lflag = $termios->getlflag();
-  $lflag &= ~(POSIX::ECHO | POSIX::ECHOK | POSIX::ICANON);
-  $termios->setlflag($lflag);
-  $termios->setcflag(POSIX::CS8 | POSIX::CREAD |
-                     POSIX::CLOCAL | POSIX::HUPCL);
-  $termios->setiflag(POSIX::IGNBRK | POSIX::IGNPAR);
-  my $baud = $self->posix_baud;
-  $termios->setospeed($baud)
-    or die "POSIX::Termios->setospeed(...) failed: $!\n";
-  $termios->setispeed($baud)
-    or die "POSIX::Termios->setospeed(...) failed: $!\n";
-  $termios->setattr($fd, POSIX::TCSANOW)
-    or die "POSIX::Termios->setattr(...) failed: $!\n";
+  my $fh = $self->filehandle;
+  unless ($fh) {
+    my $dev = $self->device;
+    print STDERR 'Opening serial port: ', $dev, "\n" if DEBUG;
+    my $fh = gensym();
+    my $s = tie *$fh, 'Device::SerialPort', $dev or
+      croak "Could not tie serial port, $dev, to file handle: $!";
+    foreach my $setting ([ baudrate => $self->baud ],
+                         [ databits => 8 ],
+                         [ parity => 'none' ],
+                         [ stopbits => 1 ],
+                         [ datatype => 'raw' ]) {
+      my ($setter, @v) = @$setting;
+      $s->$setter(@v);
+    }
+    $s->write_settings();
+    sysopen($fh, $dev, O_RDWR|O_NOCTTY|O_NDELAY) or
+      croak "sysopen of '$dev' failed: $!";
+    $self->{serial_port} = $s;
+    $self->{filehandle} = $fh;
+  }
+  $self->filehandle;
 }
 
 =method C<read($timeout)>
