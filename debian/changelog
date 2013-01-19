@@ -1,9 +1,15 @@
+libdevice-currentcost-perl (1.130190-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Sat, 19 Jan 2013 17:07:57 +0000
+
 libdevice-currentcost-perl (1.112970-1) unstable; urgency=low
 
   * Trivial Pod fix.
   * Make test more robust.
 
- -- Mark Hindess <soft-debian@temporalanomaly.com>  Mon, 24 Oct 2011 22:15:28 +0100
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Mon, 24 Oct 2011 22:16:21 +0100
 
 libdevice-currentcost-perl (1.110792-1) unstable; urgency=low
 

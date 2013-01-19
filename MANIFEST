@@ -22,6 +22,8 @@ t/02-serial.t
 t/03-timeouts.t
 t/04-history.t
 t/author-critic.t
+t/author-test-eol.t
+t/lib/Device/SerialPort.pm
 t/lib/POSIX.pm
 t/log/cc128.complete.history.xml
 t/log/cc128.incomplete.history.xml
@@ -32,7 +34,6 @@ t/log/classic.too.short.xml
 t/log/envy.history.xml
 t/log/envy.reading.xml
 t/release-common_spelling.t
-t/release-eol.t
 t/release-kwalitee.t
 t/release-no-tabs.t
 t/release-pod-coverage.t
