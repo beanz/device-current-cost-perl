@@ -7,7 +7,6 @@ use constant {
   DEBUG => $ENV{DEVICE_CURRENT_COST_TEST_DEBUG}
 };
 use Test::More tests => 34;
-use POSIX qw/:termios_h/;
 
 $|=1;
 use_ok('Device::CurrentCost');
@@ -16,9 +15,9 @@ BEGIN { use_ok('Device::CurrentCost::Constants'); }
 
 my @history = ();
 sub hist_cb { push @history, [ @_ ] };
+open my $fh, 't/log/cc128.incomplete.history.xml';
 my $dev =
-  Device::CurrentCost->new(device => 't/log/cc128.incomplete.history.xml',
-                           history_callback => \&hist_cb);
+  Device::CurrentCost->new(filehandle => $fh, history_callback => \&hist_cb);
 is($dev->type, CURRENT_COST_ENVY, 'envy device');
 my $msg = $dev->read;
 ok($msg, 'read message 1');
@@ -162,10 +161,9 @@ is($msg->summary, q{Device: CC128 v0.11
 }, '... summary');
 is_deeply(\@history, [], 'incomplete so callback not called');
 
-
+open $fh, 't/log/cc128.complete.history.xml';
 $dev =
-  Device::CurrentCost->new(device => 't/log/cc128.complete.history.xml',
-                           history_callback => \&hist_cb);
+  Device::CurrentCost->new(filehandle => $fh, history_callback => \&hist_cb);
 is($dev->type, CURRENT_COST_ENVY, 'envy device');
 $msg = $dev->read;
 ok($msg, 'read message 1');

@@ -6,7 +6,7 @@ use strict;
 use constant {
   DEBUG => $ENV{DEVICE_CURRENT_COST_TEST_DEBUG}
 };
-use Test::More tests => 10;
+use Test::More;
 use lib 't/lib';
 
 $|=1;
@@ -14,19 +14,30 @@ use_ok('Device::CurrentCost');
 BEGIN { use_ok('Device::CurrentCost::Constants'); }
 
 my $dev = Device::CurrentCost->new(device => 't/log/envy.reading.xml');
-my $fh = $dev->filehandle;
-my $fd = $fh->fileno;
-$dev->_termios_config($fh);
-my @calls = POSIX::Termios->calls;
-foreach my $exp ('POSIX::Termios::getattr '.$fd,
-                 'POSIX::Termios::getlflag ',
-                 'POSIX::Termios::setlflag 0',
-                 'POSIX::Termios::setcflag 15',
-                 'POSIX::Termios::setiflag 3',
-                 'POSIX::Termios::setospeed 4097',
-                 'POSIX::Termios::setispeed 4097',
-                 'POSIX::Termios::setattr '.$fd.' 1',
-                ) {
-  my $got = shift @calls;
-  is($got, $exp, 'POSIX calls - '.$exp);
-}
+ok $dev, 'envy serial device';
+is_deeply
+  $dev->serial_port->calls(),
+  [
+   [ 'Device::SerialPort::baudrate' => 57600 ],
+   [ 'Device::SerialPort::databits' => 8 ],
+   [ 'Device::SerialPort::parity' => 'none' ],
+   [ 'Device::SerialPort::stopbits' => 1 ],
+   [ 'Device::SerialPort::datatype' => 'raw' ],
+   [ 'Device::SerialPort::write_settings' ],
+  ], '... expected Device::SerialPort calls';
+
+$dev = Device::CurrentCost->new(device => 't/log/classic.reading.xml',
+                                   type => CURRENT_COST_CLASSIC);
+ok $dev, 'classic serial device';
+is_deeply
+  $dev->serial_port->calls(),
+  [
+   [ 'Device::SerialPort::baudrate' => 9600 ],
+   [ 'Device::SerialPort::databits' => 8 ],
+   [ 'Device::SerialPort::parity' => 'none' ],
+   [ 'Device::SerialPort::stopbits' => 1 ],
+   [ 'Device::SerialPort::datatype' => 'raw' ],
+   [ 'Device::SerialPort::write_settings' ],
+  ], '... expected Device::SerialPort calls';
+
+done_testing;

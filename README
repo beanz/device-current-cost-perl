@@ -2,7 +2,7 @@ NAME
     Device::CurrentCost - Perl modules for Current Cost energy monitors
 
 VERSION
-    version 1.112970
+    version 1.130190
 
 SYNOPSIS
       use Device::CurrentCost;
@@ -75,11 +75,11 @@ METHODS
   "baud()"
     Returns the baud rate.
 
-  "posix_baud()"
-    Returns the baud rate in POSIX::Termios format.
-
   "filehandle()"
     Returns the filehandle being used to read from the device.
+
+  "serial_port()"
+    Returns the Device::SerialPort object for the device.
 
   "open()"
     This method opens the serial port and configures it.
