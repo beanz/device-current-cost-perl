@@ -81,7 +81,7 @@ current-cost-reader - simple example script to read from a Current Cost monitor
 
 =head1 VERSION
 
-version 1.141950
+version 1.142000
 
 =head1 SYNOPSIS
 
