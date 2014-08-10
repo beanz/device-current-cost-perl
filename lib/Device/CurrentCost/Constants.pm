@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Device::CurrentCost::Constants;
-$Device::CurrentCost::Constants::VERSION = '1.142000';
+$Device::CurrentCost::Constants::VERSION = '1.142220';
 # ABSTRACT: Module to export constants for Current Cost devices
 
 
@@ -45,7 +45,7 @@ Device::CurrentCost::Constants - Module to export constants for Current Cost dev
 
 =head1 VERSION
 
-version 1.142000
+version 1.142220
 
 =head1 SYNOPSIS
 
