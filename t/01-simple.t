@@ -282,7 +282,7 @@ is($msg->summary,
       -4 years: 0
 }, '... summary');
 
-open my $fh, '<', 't/log/cc128.two.xml' or die $!;
+open $fh, '<', 't/log/cc128.two.xml' or die $!;
 $dev = Device::CurrentCost->new(filehandle => $fh);
 $msg = $dev->read;
 ok($msg, '... reading');

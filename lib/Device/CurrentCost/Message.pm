@@ -1,10 +1,7 @@
 use strict;
 use warnings;
 package Device::CurrentCost::Message;
-{
-  $Device::CurrentCost::Message::VERSION = '1.130190';
-}
-
+$Device::CurrentCost::Message::VERSION = '1.142220';
 # ABSTRACT: Perl modules for Current Cost energy monitor messages
 
 
@@ -214,9 +211,9 @@ sub _parse_history {
 
 1;
 
-
-
 =pod
+
+=encoding UTF-8
 
 =head1 NAME
 
@@ -224,7 +221,7 @@ Device::CurrentCost::Message - Perl modules for Current Cost energy monitor mess
 
 =head1 VERSION
 
-version 1.130190
+version 1.142220
 
 =head1 SYNOPSIS
 
@@ -355,13 +352,12 @@ Mark Hindess <soft-cpan@temporalanomaly.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Mark Hindess.
+This software is copyright (c) 2014 by Mark Hindess.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
 
 __END__
 

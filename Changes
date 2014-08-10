@@ -1,5 +1,8 @@
 Revision history for Perl extension Device::CurrentCost.
 
+1.142220  2014-08-10 22:33:41+01:00 Europe/London
+    - Fix test warning.
+
 1.130190  2013-01-19 17:27:09 Europe/London
     - Use Device::SerialPort.
 

@@ -1,8 +1,26 @@
+libdevice-currentcost-perl (1.130190-4) unstable; urgency=low
+
+  * Fix breaks.
+
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Sat, 19 Jan 2013 18:16:31 +0000
+
+libdevice-currentcost-perl (1.130190-3) unstable; urgency=low
+
+  * Add breaks to avoid breaking libanyevent-currentcost-perl.
+
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Sat, 19 Jan 2013 18:09:45 +0000
+
+libdevice-currentcost-perl (1.130190-2) unstable; urgency=low
+
+  * Add conflicts to avoid breaking libanyevent-currentcost-perl.
+
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Sat, 19 Jan 2013 18:00:40 +0000
+
 libdevice-currentcost-perl (1.130190-1) unstable; urgency=low
 
   * New upstream release.
 
- -- Mark Hindess <soft-debian@temporalanomaly.com>  Sat, 19 Jan 2013 17:07:57 +0000
+ -- Mark Hindess <soft-debian@temporalanomaly.com>  Sat, 19 Jan 2013 17:27:09 +0000
 
 libdevice-currentcost-perl (1.112970-1) unstable; urgency=low
 
