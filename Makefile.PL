@@ -37,6 +37,8 @@ my %WriteMakefileArgs = (
     "warnings" => 0
   },
   "TEST_REQUIRES" => {
+    "ExtUtils::MakeMaker" => 0,
+    "File::Spec" => 0,
     "IO::Pipe" => 0,
     "Test::More" => 0,
     "Test::Requires" => 0,
@@ -44,7 +46,7 @@ my %WriteMakefileArgs = (
     "Test::Warn" => 0,
     "lib" => 0
   },
-  "VERSION" => "1.142220",
+  "VERSION" => "1.142230",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -54,7 +56,9 @@ my %WriteMakefileArgs = (
 my %FallbackPrereqs = (
   "Carp" => 0,
   "Device::SerialPort" => 0,
+  "ExtUtils::MakeMaker" => 0,
   "Fcntl" => 0,
+  "File::Spec" => 0,
   "Getopt::Long" => 0,
   "IO::Handle" => 0,
   "IO::Pipe" => 0,

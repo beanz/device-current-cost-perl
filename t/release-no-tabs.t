@@ -19,6 +19,8 @@ my @files = (
     'lib/Device/CurrentCost.pm',
     'lib/Device/CurrentCost/Constants.pm',
     'lib/Device/CurrentCost/Message.pm',
+    't/00-report-prereqs.dd',
+    't/00-report-prereqs.t',
     't/01-simple.t',
     't/02-serial.t',
     't/03-timeouts.t',

@@ -47,7 +47,12 @@
          }
       },
       "test" : {
+         "recommends" : {
+            "CPAN::Meta" : "2.120900"
+         },
          "requires" : {
+            "ExtUtils::MakeMaker" : "0",
+            "File::Spec" : "0",
             "IO::Pipe" : "0",
             "Test::More" : "0",
             "Test::Requires" : "0",
@@ -68,6 +73,6 @@
          "web" : "https://github.com/beanz/device-current-cost-perl"
       }
    },
-   "version" : "1.142220"
+   "version" : "1.142230"
 }
 
