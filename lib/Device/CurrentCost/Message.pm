@@ -28,9 +28,7 @@ package Device::CurrentCost::Message;
 
 =cut
 
-use constant {
-  DEBUG => $ENV{DEVICE_CURRENT_COST_DEBUG},
-};
+use constant DEBUG => $ENV{DEVICE_CURRENT_COST_DEBUG};
 
 use Carp qw/croak carp/;
 use Device::CurrentCost::Constants;
