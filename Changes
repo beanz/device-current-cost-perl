@@ -1,6 +1,7 @@
 Revision history for Perl extension Device::CurrentCost.
 
 {{$NEXT}}
+    - Fix constant usage in tests to avoid error on perl 5.6.x.
 
 1.142230  2014-08-11 20:49:13+01:00 Europe/London
     - Fix constant usage to avoid error on perl 5.6.x.
