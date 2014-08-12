@@ -3,9 +3,7 @@
 # Copyright (C) 2011 by Mark Hindess
 
 use strict;
-use constant {
-  DEBUG => $ENV{DEVICE_CURRENT_COST_TEST_DEBUG}
-};
+use constant DEBUG => $ENV{DEVICE_CURRENT_COST_TEST_DEBUG};
 use Test::More tests => 34;
 
 $|=1;

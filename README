@@ -2,7 +2,7 @@ NAME
     Device::CurrentCost - Perl modules for Current Cost energy monitors
 
 VERSION
-    version 1.142230
+    version 1.142240
 
 SYNOPSIS
       use Device::CurrentCost;
