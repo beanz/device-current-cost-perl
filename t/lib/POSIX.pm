@@ -1,19 +1,17 @@
 package POSIX;
 
-use constant {
-  ECHO => 0x1,
-  ECHOK => 0x2,
-  ICANON => 0x4,
-  CS8 => 0x1,
-  CREAD => 0x2,
-  CLOCAL => 0x4,
-  HUPCL => 0x8,
-  IGNBRK => 0x1,
-  IGNPAR => 0x2,
-  B4800 => 0x1,
-  B9600 => 0x2,
-  TCSANOW => 0x1,
-};
+use constant ECHO => 0x1;
+use constant ECHOK => 0x2;
+use constant ICANON => 0x4;
+use constant CS8 => 0x1;
+use constant CREAD => 0x2;
+use constant CLOCAL => 0x4;
+use constant HUPCL => 0x8;
+use constant IGNBRK => 0x1;
+use constant IGNPAR => 0x2;
+use constant B4800 => 0x1;
+use constant B9600 => 0x2;
+use constant TCSANOW => 0x1;
 
 package POSIX::Termios;
 
