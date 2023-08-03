@@ -47,7 +47,7 @@ use constant DEBUG => $ENV{DEVICE_CURRENT_COST_DEBUG};
 use Carp qw/croak carp/;
 use Device::CurrentCost::Constants;
 use Device::CurrentCost::Message;
-use Device::SerialPort qw/:PARAM :STAT 0.07/;
+use Device::SerialPort;
 use Fcntl;
 use IO::Handle;
 use IO::Select;
