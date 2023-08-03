@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Device::CurrentCost;
-$Device::CurrentCost::VERSION = '1.232150';
+$Device::CurrentCost::VERSION = '1.232151';
 # ABSTRACT: Perl modules for Current Cost energy monitors
 
 
@@ -183,7 +183,7 @@ Device::CurrentCost - Perl modules for Current Cost energy monitors
 
 =head1 VERSION
 
-version 1.232150
+version 1.232151
 
 =head1 SYNOPSIS
 
