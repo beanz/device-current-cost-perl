@@ -1,6 +1,8 @@
 Revision history for Perl extension Device::CurrentCost.
 
 {{$NEXT}}
+
+1.232150  2023-08-03 20:58:24+01:00 Europe/London
     - Fix Device::SerialPort imports (thx @haarg).
 
 1.142240  2014-08-12 15:46:29+01:00 Europe/London
